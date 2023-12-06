@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{%block content%}
+{% load cart%}
+{% load custom_filter%}
+    <div class='container'>
+        <div class="border rounded p-4  m-4">
+            
+            <p class="display-4 pl-4 ml-4">Giỏ hàng</p>
+            <hr>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Stt</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Size</th>
+                        <th>Hình ảnh</th>
+                        <th>Giá sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Tổng giá sản phẩm</th>
+                        <th>Xóa sản phẩm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products%}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{product.name}}</td>
+                        <td>{{product.size}}</td>
+                        <td><img style="height:80px;" class="rounded-circle" src="{{product.image.url}}" alt=""></td>
+                        <td>{% cal_sellprice product.price product.discount as value %} {{value|currency}}
+                          {% is_discount product.discount as check %}
+                          {% if check %}
+                            <span class="badge badge-danger">-{{product.discount}}%</span>
+                          {% endif %}
+                        </td>
+                        <td>{{product|cart_quantity:request.session.cart}}</td>
+                        <td>{{product|price_total:request.session.cart|currency}}</td>
+                        <td>
+                          <form action="/delete" class="col-2" method="POST">
+                            {%csrf_token%}
+                            <input hidden type="text" name='product' value='{{product.id}}'>
+                            <input hidden type="text" name='remove' value='True'>
+                            <input type="submit" value=" x " class="btn btn-block btn-outline-danger btn-sm" style="width: 2rem;">
+                          </form>
+                        </td>
+                    {% endfor %}
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="5"></th>
+                        <th >Tổng thanh toán</th>
+                        <th>
+                          {{products|total_cart_price:request.session.cart|currency}}
+                          <span>= {{products|convert_USD:request.session.cart|currency}}</span>
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+            {% if products|is_price:request.session.cart %}
+              <div class="m-3 p-3">
+                <a href="#" data-toggle="modal" data-target="#exampleModal" class="btn btn-outline-info border rounded col-lg-3 float-right">Thanh toán</a>
+              </div>
+            {%endif%}
+        </div>
+    </div>
+ 
+    <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Phiếu thanh toán</h5>
+          <hr>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="m-2 p-3">
+                <form action="check-out" class="" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="">Địa chỉ</label>
+                      <input type="text" name="address" id="" class="form-control" placeholder="" aria-describedby="helpId">
+                    </div>
+                    <div class="form-group">
+                      <label for="">Số điện thoại</label>
+                      <input type="text" name="phone" id="" class="form-control" placeholder="" aria-describedby="helpId">
+                    </div>
+                    <div class="form-group">
+                      <label for="pay">Phương thức thanh toán</label>
+                      <select class="custom-select" id="pay" name="method_pay">
+                        {% comment %} <option selected>Chọn phương thức...</option> {% endcomment %}
+                        <option value="Thanh toán khi nhận hàng">Thanh toán khi nhận hàng</option>
+                        <option value="Thanh toán online">Thanh toán online</option>
+                      </select>
+                    </div>
+                    <input type="submit" class=" btn float-right btn-outline-info col-lg-6" value="Thanh toán">
+                </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% comment %} <!-- query.html -->
+<html>
+<head>
+    <title>Query</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.0/dist/js.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">
+    <script>
+        $(document).ready(function() {
+            // Send the form on enter keypress and avoid if shift is pressed
+            $('#prompt').keypress(function(event) {
+                if (event.keyCode === 13 && !event.shiftKey) {
+                    event.preventDefault();
+                    $('form').submit();
+                }
+            });
+            $('form').on('submit', function(event) {
+                event.preventDefault();
+            // get the CSRF token from the cookie
+            var csrftoken = Cookies.get('csrftoken');
+              
+            // set the CSRF token in the AJAX headers
+            $.ajaxSetup({
+                headers: { 'X-CSRFToken': csrftoken }
+            });
+                // Get the prompt
+                var prompt = $('#prompt').val();
+                var dateTime = new Date();
+                var time = dateTime.toLocaleTimeString();
+                // Add the prompt to the response div
+                $('#response').append('<p>('+ time + ') <i class="bi bi-person"></i>: ' + prompt + '</p>');
+                // Clear the prompt
+                $('#prompt').val('');
+                $.ajax({
+                    url: '/',
+                    type: 'POST',
+                    data: {prompt: prompt},
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#response').append('<p>('+ time + ') <i class="bi bi-robot"></i>: ' + data.response + '</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container p-3">
+        <h3>ChatGPT Clone</h3>
+        <div class="mb-3">
+            <form method="post">
+                {% csrf_token %}
+                <label for="prompt" class="form-label"><strong>Prompt: </strong></label>
+                <textarea class="form-control" type="textarea" id="prompt" name="prompt" rows="3"></textarea>
+                <br>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+        </div>
+        <br>
+        <div class="mb-3">
+            <h6>Response:</h6> 
+            <div class="container border overflow-auto h-50" id="response"></div>
+              
+        </div>
+    </div>
+</body>
+</html> {% endcomment %}
+
+{% comment %} {% extends 'base.html' %} {% endcomment %}
+{% block content %}
+<!-- Link Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.15.0/font/bootstrap-icons.css">
+
+<!-- chat.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat với chúng tôi</title>
+    <style>
+        .chat-box {
+            width: 1500px;
+            height: 400px;
+            border: 1px solid #ccc;
+            overflow-y: auto;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+    </style>
+    <style>
+        .blue-box {
+            background-color: #fff; /* Nền trắng */
+            color: #3498db; /* Màu xanh */
+            padding: 0px;
+            box-sizing: border-box;
+            max-width: 100%; /* Chiều rộng tối đa là 100% của phần tử chứa nó */
+            width: auto; /* Chiều rộng tự động mở rộng theo nội dung */
+        }
+    </style>
+    <style>
+        .bold-red-text {
+            color: #e74c3c; /* Màu đỏ */
+            font-weight: bold;
+        }
+    </style>
+    <style>
+        .bold-dark-green-text {
+            color: #006400; /* Màu xanh lá cây đậm */
+            font-weight: bold;
+        }
+    </style>
+    <style>
+        .bold-dark-yellow-text {
+            color: #FFD700; /* Màu vàng đậm */
+            font-weight: bold;
+        }
+    </style>
+    <style>
+        .bold-dark-yellow-text {
+            color: #FFD700; /* Màu vàng đậm */
+            font-weight: bold;
+            background-color: #000; /* Nền đen đậm */
+            padding: 10px;
+            display: inline-block; /* Để khung chỉ chiếm chiều rộng của văn bản */
+            box-sizing: border-box;
+        }
+    </style>
+    <style>
+        .container {
+            display: flex;
+            align-items: center;
+        }
+
+        .content {
+            flex: 1;
+            /* Thêm các thuộc tính CSS khác cho nội dung nếu cần */
+        }
+
+        .image {
+            margin-left: 20px; /* Khoảng cách giữa nội dung và ảnh */
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Trò chuyện trực tuyến</h2>
+<div class="chat-box" id="chat-box">
+    {% for message in messages %}
+        <i class="bi-robot"></i>
+        <div class="blue-box">
+            <p>({{ message.timestamp }}) : </p> 
+        </div>
+        {% comment %} <p>({{ message.timestamp }}) : </p>  {% endcomment %}
+        <p><span class="bold-red-text">{{message.customer}}</span> : {{ message.content }}</p>
+        {% if message.response %}
+            <p><span class="bold-dark-green-text">KimDanShop</span>: {{ message.response }}</p>
+        {% endif %}
+    {% endfor %}
+    
+</div>
+
+<form method="post" action="{% url 'chat' %}">
+    {% csrf_token %}
+    <span class="bold-dark-yellow-text"><label for="content">Tin nhắn:</label></span>
+    <input type="text" id="content" name="content" required style="width: 405px;">
+    {% comment %} <button type="submit">Hỏi</button> {% endcomment %}
+</form>
+</div>
+</body>
+</html>
+{% endblock content %}
+<!-- chat.html -->

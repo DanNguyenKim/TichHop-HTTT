@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{%block content%}
+{% load cart%}
+{% load custom_filter%}
+    <div class='container'>
+        <div class="border rounded p-4  m-4">
+            
+            <p class="display-4 pl-4 ml-4">Đơn hàng</p>
+            <hr>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Stt</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Size</th>
+                        <th>Hình ảnh</th>
+                        <th>Giá/1 sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Tổng giá sản phẩm</th>
+                        <th>Phương thức thanh toán</th>
+                        <th>Ngày đặt</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders%}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{order.product.name}}</td>
+                        <td>{{order.size}}</td>
+                        <td><img style="height:80px;" class="rounded-circle" src="{{order.product.image.url}}" alt=""></td>
+                        <td>{% cal_sellprice order.product.price order.product.discount as value %}
+                            {{value|currency}}
+                            {% is_discount order.product.discount as check %}
+                            {% if check %}
+                              <span class="badge badge-danger">-{{order.product.discount}}%</span>
+                            {% endif %}
+                        </td>
+                        <td>{{order.quantity}}</td>
+                        <td>{% cal_sellprice order.product.price order.product.discount as value %}{{order.quantity|multiply:value|currency}}</td>
+                        <td><small class="badge badge-info text-light">{{order.method_pay}}</small></td>
+                        <td>{{order.date}}</td>
+                        {% if order.status %}
+                        <td><small class="badge badge-success">Đã xác nhận</small></td>
+                        {% else %}
+                        <td><small class="badge badge-warning">Chờ xác nhận</small></td>
+                        {% endif %}
+                    {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock content %}

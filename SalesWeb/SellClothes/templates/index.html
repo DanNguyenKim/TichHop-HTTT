@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+<!--body-->
+{% block content %}
+{% load cart %}
+{% load custom_filter%}
+{{customer}}
+{% if request.session.customer %}
+<div class="container-fluid mt-3">
+    <div class="owl-carousel owl-theme">
+        <div class="item"><img src="/KimDanShop/static/images/20221206_aoAKfgV6R9XExxkO.png" alt=""></div>
+        <div class="item"><img src="/KimDanShop/static/images/20221225_7F4lgjLUwJI8GDTO.png" alt=""></div>
+        
+    </div>
+    <div class="row ">
+        {% comment %} filter {% endcomment %}
+        {% comment %} 
+        <div class='col-lg-2 mx-auto'>
+            <div class="list-group">
+                <a href="/" class="list-group-item list-group-item-action " type="button" id="dropdownMenuButton">TẤT CẢ SẢN PHẨM</a>
+                {%for category in categories%}
+                <a href="/?category={{category.id}}"
+                    class="list-group-item list-group-item-action ">{{category.name}}</a>
+                {%endfor%}
+            </div>
+        </div> {% endcomment %}
+
+        <div class='col-lg-2 mx-auto category'>
+            <div class="btn-group-vertical list_category">
+                <a href="/" role="button" class="btn btn-outline-secondary ">  <b>TẤT CẢ SẢN PHẨM</b></a>
+                {%for category in categories%}
+                <div class="btn-group dropright">
+                    <a class="btn btn-outline-secondary dropdown-toggle line_down" href="#" type="button"
+                        id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{category.name}}
+                    </a>
+                    <div class="dropdown-menu show" aria-labelledby="dropdownMenuLink">
+                        <a href="/?category={{category.id}}" class="dropdown-item btn-sm">Tất cả</a>
+                        <a href="/?size={{'S'}}/{{category.id}}" class="dropdown-item btn-sm">Size S</a>
+                        <a class="dropdown-item btn-sm" href="/?size={{'M'}}/{{category.id}}">Size M</a>
+                        <a class="dropdown-item btn-sm" href="/?size={{'L'}}/{{category.id}}">Size L</a>
+                    </div>
+
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+        {% comment %} all products {% endcomment %}
+        
+        <div class='products col-lg-10 mx-auto'>
+            
+            <div class="header_product d-flex justify-content-between align-items-center mb-20  pdb-20 line_down">
+                <h2 class="size20 weight_500">CÁC SẢN PHẨM ĐÃ CHỌN</h2>
+                
+                <div class="d-flex justify-content-between">
+                    {% comment %} <div class="input-group mr-20">
+                        <div class="form-outline">
+                          <input id="search-focus" placeholder="Tìm kiếm" type="search" id="form1" class="form-control" />
+                          
+                        </div>
+                        <button type="button" class="btn">
+                          <i class="fas fa-search"></i>
+                        </button>
+                    </div> {% endcomment %}
+                    <div class="dropdown mr-1">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                            aria-expanded="false" data-offset="10,20"><i class="fa-solid fa-sort"></i>
+                            Sắp xếp theo giá
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="?price={{1}}">Dưới 100.000</a>
+                            <a class="dropdown-item" href="?price={{2}}">Từ 100.000 - 200000</a>
+                            <a class="dropdown-item" href="?price={{3}}">Trên 200000</a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mx-auto">
+                {% for product in products%}
+                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6  mb-5" id={{product.id}} >
+                    <div class="item_product box_shadow relative">
+                        <a href="/?detail={{product.id}}"><img class="card-img-top pdb-10 line_down" height="279" width="279" src="{{product.image.url}}" alt="Card image cap"></a>
+                        <div class="card-body">
+                            <p class="card-title">{{product.name}}</p>
+                            <!-- <div class="row">
+                                <div class="col-xl-4">
+                                    <a href="/?detail={{product.id}}" class="btn btn-outline-secondary btn-sm " role="button"
+                                aria-pressed="true"><i class="fa-solid fa-eye"></i> Chi tiết</a>
+                                </div>
+                                <div class="col-xl-4">
+                                    <button type="button" class="btn btn-lg btn-primary float-right btn-sm" disabled>Size
+                                        {{product.size}}</button>
+                                </div>
+                                <div class="col-xl-4">
+                                    <a role="button" class="btn btn-outline-secondary float-right btn-sm"
+                                href="/?comment_id={{product.id}}"><i class="fa-regular fa-comment"></i> Đánh giá</a>
+                                </div>
+                            </div> -->
+                            <div class="size_rate d-flex justify-content-between ">
+                                <a href="/?detail={{product.id}}" class="btn btn-outline-secondary btn-sm " role="button"
+                                aria-pressed="true"><i class="fa-solid fa-eye"></i> Chi tiết</a>
+                            
+                                <button type="button" class="btn btn-lg btn-primary  btn-sm" disabled>Size
+                                    {{product.size}}</button>
+                            
+                            {% comment %} <button class="btn btn-outline-secondary btn-sm" href="/detail" type="button">Chi
+                                tiết</button> {% endcomment %}
+                                <a role="button" class="btn btn-outline-secondary  btn-sm"
+                                href="/?comment_id={{product.id}}"><i class="fa-regular fa-comment"></i> Đánh giá</a>
+                            </div>
+                            {% is_discount product.discount as check %}
+                            {% if check %}
+                            <p class="card-text m-0 p-0">
+                                <span class="badge badge-pill badge-danger">Giảm giá {{product.discount}} %</span>
+                            <div class='card-text'>
+                                <del style="color:Tomato;">{{product.price|currency}}</del>
+                                <span class="card-text"><b>{% cal_sellprice product.price product.discount as value %}
+                                        {{value|currency}}</b></span>
+                            </div>
+                            </p>
+                            
+                            {% else %}
+                            <p class="card-text m-0 p-0">
+                                <span class="price">
+                                    <br>
+                                    <span class="card-text"><b>{% cal_sellprice product.price product.discount as value %}
+                                            {{value|currency}}</b></span>
+                                </span>
+                            </p>
+                            
+                            {% endif %}
+                        </div>
+                        <div class="card-footer p-0 no-gutters">
+                            {% if product|is_in_cart:request.session.cart %}
+                            <div class="row no-gutters">
+                                <form action="/#{{product.id}}" class="col-2" method="POST">
+                                    {%csrf_token%}
+                                    <input hidden type="text" name='product' value='{{product.id}}'>
+                                    <input hidden type="text" name='remove' value='True'>
+                                    <input type="submit" value=" - " class="btn btn-block btn-outline-danger">
+                                </form>
+                                <div class="text-center col form-control alert_cart"> {{product|cart_quantity:request.session.cart}}
+                                    sản phẩm trong
+                                    giỏ </div>
+                                <form action="/#{{product.id}}" class="col-2" method="POST">
+                                    {%csrf_token%}
+                                    <input hidden type="text" name='product' value='{{product.id}}'>
+                                    <input type="submit" value=" + " class="btn btn-block btn-outline-danger">
+                                </form>
+                            </div>
+                            {% else %}
+                            <form action="/#{{product.id}}" method="POST" class="btn-block">
+                                {%csrf_token%}
+                                <input hidden type="text" name='product' value='{{product.id}}'>
+                                <button type="submit" name="submit" class="float-light btn btn-outline-danger form-control btn_order"><i class="fa-solid fa-cart-shopping"></i> Đặt hàng</button>
+                                <!-- <input type="submit" class="float-light btn btn-outline-danger form-control btn_order"
+                                    value="Thêm vào giỏ"> -->
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                </div>
+                {% endfor %}
+            </div>
+            <div class="pagination justify-content-center">
+                <span class="step-links">
+                    {% if products.has_previous %}
+                        <a href="?page=1" role="button" class="btn btn-outline-secondary btn-sm">&laquo; Quay lại trang đầu</a>
+                        <a href="?page={{ products.previous_page_number }}" role="button" class="btn btn-outline-secondary btn-sm">Trước</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        Trang {{ products.number }} trên {{ products.paginator.num_pages }}.
+                    </span>
+            
+                    {% if products.has_next %}
+                        <a href="?page={{ products.next_page_number }}" role="button" class="btn btn-outline-secondary btn-sm">Tiếp theo</a>
+                        <a href="?page={{ products.paginator.num_pages }}" role="button" class="btn btn-outline-secondary btn-sm">Trang cuối &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        
+
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container-fluid mt-3">
+    <div class="owl-carousel owl-theme">
+        <div class="item"><img src="/KimDanShop/static/images/20221206_aoAKfgV6R9XExxkO.png" alt=""></div>
+        <div class="item"><img src="/KimDanShop/static/images/20221225_7F4lgjLUwJI8GDTO.png" alt=""></div>
+        
+    </div>
+    <div class="row category">
+        <div class='col-lg-2 mx-auto'>
+            <div class="btn-group-vertical list_category">
+                <a href="/" role="button" class="btn btn-outline-secondary "><b>TẤT CẢ SẢN PHẨM</b></a>
+                {%for category in categories%}
+                <div class="btn-group dropright">
+                    <a class="btn btn-outline-secondary dropdown-toggle line_down" href="#" type="button"
+                        id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{category.name}}
+                    </a>
+                    <div class="dropdown-menu show" aria-labelledby="dropdownMenuLink">
+                        <a href="/?category={{category.id}}" class="dropdown-item btn-sm">Tất cả</a>
+                        <a href="/?size={{'S'}}/{{category.id}}" class="dropdown-item btn-sm">Size S</a>
+                        <a class="dropdown-item btn-sm" href="/?size={{'M'}}/{{category.id}}">Size M</a>
+                        <a class="dropdown-item btn-sm" href="/?size={{'L'}}/{{category.id}}">Size L</a>
+                    </div>
+
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+        {% comment %} all products {% endcomment %}
+        <div class='products col-lg-10 mx-auto' >
+            <div class="header_product d-flex justify-content-between align-items-center mb-20  pdb-20 line_down">
+                <h2 class="size20 weight_500">TẤT CẢ SẢN PHẨM</h2>
+                <div class="dropdown mr-1">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                        aria-expanded="false" data-offset="10,20">
+                        Sắp xếp
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="?price={{1}}">Dưới 100.000</a>
+                        <a class="dropdown-item" href="?price={{2}}">Từ 100.000 - 200000</a>
+                        <a class="dropdown-item" href="?price={{3}}">Trên 200000</a>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="row mx-auto">
+                {% for product in products%}
+                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6  mb-5 product_bflogin" id={{product.id}} >
+                    <div class="item_product  box_shadow relative">
+                        <a href="/?detail={{product.id}}"><img class="card-img-top pdb-10 line_down" height="279" width="279" src="{{product.image.url}}" alt="Card image cap"></a>
+                        <div class="card-body">
+                            <p class="card-title">{{product.name}}</p>
+                            <a href="/?detail={{product.id}}" class="btn btn-outline-secondary btn-sm " role="button"
+                                aria-pressed="true"><i class="fa-solid fa-eye"></i> Chi tiết</a>
+                            <span>
+                                <button type="button" class="btn btn-lg btn-primary btn-sm" disabled>Size
+                                    {{product.size}}</button>
+                            </span>
+                            {% comment %} <button class="btn btn-outline-secondary btn-sm" href="/detail"
+                                type="button"> Chi
+                                tiết</button> {% endcomment %}
+                            {% is_discount product.discount as check %}
+                            {% if check %}
+                            <p class="card-text m-0 p-0">
+                                <span class="badge badge-pill badge-danger">Giảm giá {{product.discount}} %</span>
+                            <div class='card-text'>
+                                <del style="color:Tomato;">{{product.price|currency}}</del>
+                                <span class="card-text"><b>{% cal_sellprice product.price product.discount as value %}
+                                        {{value|currency}}</b></span>
+                            </div>
+                            </p>
+                            {% else %}
+                            <p class="card-text m-0 p-0">
+                                <span class="price">
+                                    <br>
+                                    <span class="card-text"><b>{% cal_sellprice product.price product.discount as value %}
+                                            {{value|currency}}</b></span>
+                                </span>
+                            </p>
+                            {% endif %}
+                            
+                        </div>
+                        <a class="btn btn-primary width_100 btn_order" href="#"><i class="fa-solid fa-cart-shopping"></i> Đặt hàng</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="pagination justify-content-center">
+                <span class="step-links">
+                    {% if products.has_previous %}
+                        <a href="?page=1" role="button" class="btn btn-outline-secondary btn-sm">&laquo; Quay lại trang đầu</a>
+                        <a href="?page={{ products.previous_page_number }}" role="button" class="btn btn-outline-secondary btn-sm">Trước</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        Trang {{ products.number }} trên {{ products.paginator.num_pages }}.
+                    </span>
+            
+                    {% if products.has_next %}
+                        <a href="?page={{ products.next_page_number }}" role="button" class="btn btn-outline-secondary btn-sm">Tiếp theo</a>
+                        <a href="?page={{ products.paginator.num_pages }}" role="button" class="btn btn-outline-secondary btn-sm">Trang cuối &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}

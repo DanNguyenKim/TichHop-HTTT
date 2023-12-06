@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+<!--body-->
+{% block content %}
+{% load cart %}
+{% load custom_filter%}
+
+{% for product in products%}
+<div class="container mt-5 mb-5">
+    <div class='row'>
+        <div class="col-lg-5">
+            
+                <div class="wrap">
+                    <div class="item_detail" data-image="{{product.image.url}}"></div>
+        
+                </div>
+                <!-- <img class="card-img" src="{{product.image.url}}" alt="Card image cap" style="width: 18rem;"> -->
+            
+        </div>
+            
+        <div class="col-lg-7">
+            <div class="w-50">
+                <hr>
+                <h5 class="card-title">{{product.name}}</h5>
+                <button type="button" class="btn btn-lg btn-primary btn-sm mb-10" disabled>Size
+                    {{product.size}}</button>
+                <p class="price weight_500 mb-10">{{product.price}} <span>VND</span></p>
+                <p class="card-text">{{product.description}}</p>
+                
+            </div>
+            <div class="card-footer p-0 no-gutters w-50">
+                {% if product|is_in_cart:request.session.cart %}
+                <div class="row no-gutters">
+                    <form action="/#{{product.id}}" class="col-2" method="POST">
+                        {%csrf_token%}
+                        <input hidden type="text" name='product' value='{{product.id}}'>
+                        <input hidden type="text" name='remove' value='True'>
+                        <input type="submit" value=" - " class="btn btn-block btn-outline-danger">
+                    </form>
+                    <div class="text-center col form-control alert_cart"> {{product|cart_quantity:request.session.cart}}
+                        sản phẩm trong
+                        giỏ </div>
+                    <form action="/#{{product.id}}" class="col-2" method="POST">
+                        {%csrf_token%}
+                        <input hidden type="text" name='product' value='{{product.id}}'>
+                        <input type="submit" value=" + " class="btn btn-block btn-outline-danger">
+                    </form>
+                </div>
+                {% else %}
+                <form action="/#{{product.id}}" method="POST" class="btn-block">
+                    {%csrf_token%}
+                    <input hidden type="text" name='product' value='{{product.id}}'>
+                    <button type="submit" name="submit" class="float-light btn btn-outline-danger form-control btn_order"><i class="fa-solid fa-cart-shopping"></i> Đặt hàng</button>
+                    <!-- <input type="submit" class="float-light btn btn-outline-danger form-control btn_order"
+                        value="Thêm vào giỏ"> -->
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endfor %}
+
+{% endblock content %}

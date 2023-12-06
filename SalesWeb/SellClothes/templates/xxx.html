@@ -1,0 +1,84 @@
+<div class="container-fluid mt-3">
+    <div class="row category">
+        <div class='col-lg-2 mx-auto'>
+            <div class="btn-group-vertical list_category">
+                <a href="/" role="button" class="btn btn-outline-secondary "><b>TẤT CẢ SẢN PHẨM</b></a>
+                {%for category in categories%}
+                <div class="btn-group dropright">
+                    <a class="btn btn-outline-secondary dropdown-toggle line_down" href="#" type="button"
+                        id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{category.name}}
+                    </a>
+                    <div class="dropdown-menu show" aria-labelledby="dropdownMenuLink">
+                        <a href="/?category={{category.id}}" class="dropdown-item btn-sm">Tất cả</a>
+                        <a href="/?size={{'S'}}/{{category.id}}" class="dropdown-item btn-sm">Size S</a>
+                        <a class="dropdown-item btn-sm" href="/?size={{'M'}}/{{category.id}}">Size M</a>
+                        <a class="dropdown-item btn-sm" href="/?size={{'L'}}/{{category.id}}">Size L</a>
+                    </div>
+
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+        {% comment %} all products {% endcomment %}
+        <div id='products' class='col-lg-10 mx-auto'>
+            <div class="header_product d-flex justify-content-between align-items-center mb-20  pdb-20 line_down">
+                <h2 class="size20 weight_500">TẤT CẢ SẢN PHẨM</h2>
+                <div class="dropdown mr-1">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                        aria-expanded="false" data-offset="10,20">
+                        Sắp xếp
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Dưới 100.000</a>
+                        <a class="dropdown-item" href="#">100.000 - 300.000</a>
+                        <a class="dropdown-item" href="#">300.000 - 500.000</a>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="row mx-auto">
+                {% for product in products%}
+                <div class=" col-lg-3 col-md-4 col-sm-6  mb-5" id={{product.id}} >
+                    <div class="item box_shadow relative">
+                        <a href="/?detail={{product.id}}"><img class="card-img-top pdb-10 line_down" height="279" width="279" src="{{product.image.url}}" alt="Card image cap"></a>
+                        <div class="card-body">
+                            <p class="card-title">{{product.name}}</p>
+                            <a href="/?detail={{product.id}}" class="btn btn-outline-secondary btn-sm " role="button"
+                                aria-pressed="true"><i class="fa-solid fa-eye"></i> Chi tiết</a>
+                            <span>
+                                <button type="button" class="btn btn-lg btn-primary btn-sm" disabled>Size
+                                    {{product.size}}</button>
+                            </span>
+                            {% comment %} <button class="btn btn-outline-secondary btn-sm" href="/detail"
+                                type="button">Chi
+                                tiết</button> {% endcomment %}
+                            {% is_discount product.discount as check %}
+                            {% if check %}
+                            <p class="card-text m-0 p-0">
+                                <span class="badge badge-pill badge-danger">Giảm giá {{product.discount}} %</span>
+                            <div class='card-text'>
+                                <del style="color:Tomato;">{{product.price|currency}}</del>
+                                <span class="card-text"><b>{% cal_sellprice product.price product.discount as value %}
+                                        {{value|currency}}</b></span>
+                            </div>
+                            </p>
+                            {% else %}
+                            <p class="card-text m-0 p-0">
+                                <span class="price">
+                                    <br>
+                                    <span class="card-text"><b>{% cal_sellprice product.price product.discount as value %}
+                                            {{value|currency}}</b></span>
+                                </span>
+                            </p>
+                            {% endif %}
+                            
+                        </div>
+                        <a class="btn btn-primary width_100 btn_order" href="#"><i class="fa-solid fa-cart-shopping"></i> Đặt hàng</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

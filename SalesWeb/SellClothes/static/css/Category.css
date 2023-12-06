@@ -1,0 +1,26 @@
+.list_category{
+    width: 100%;
+}
+.list_category a {
+    border: none;
+}
+.list_category .line_down{
+    border-bottom: solid 1px #ccc;
+}
+.list_category .btn {
+    border-radius: 0;
+}
+.category .show {
+display: none;
+}
+.category .dropright:hover .show {
+    display: block !important;
+    position: absolute;
+    transform: translate3d(223px, 0px, 0px);
+    top: 0px;
+    left: 0px;
+    will-change: transform;
+}
+.width_100 {
+    width: 100% !important;
+}
